@@ -7,6 +7,10 @@ $(document).ready(function(){
         const exp1 = parseInt($('#exp1').val());
         const exp2 = parseInt($('#exp2').val());
 
+        //clear inputs
+        $(".align").empty();
+        $(".round1").empty();
+
         //Check Inputs
         validateInput(op1, op2, nBits, round, exp1, exp2);
 
@@ -57,6 +61,71 @@ $(document).ready(function(){
         }
     }
 
+
+
+    function GRS(op, nBits){
+
+    }
+
+    function addition(op1, op2, nBits){
+        let carry = [];
+        let result = [];
+
+
+        for(let i = nBits; i >= 0 ; i--){
+            let sumTemp = parseInt(op1[i]) + parseInt(op2[i]);
+            let carryTemp = sumTemp / 2;
+            sumTemp %= 2;
+
+        }
+    }
+    
+    function rounding(op, nBits){
+        let carry = "";
+        let result = "";
+        //nearest even
+        if(op.length - 1 != nBits){
+            nDigits = op.substring(0, parseInt(nBits)+1);
+            excess = op.substring(parseInt(nBits)+1)
+
+            if(excess[0] == "1"){
+                tempRes = parseInt(op[nBits]) + 1;
+                tempCarry = Math.floor(tempRes / 2);
+                tempRes = tempRes % 2;
+                result += "" + tempRes;
+                carry += "" + tempCarry;
+
+                for(let i = nBits-1; i >= 0; i--){
+                    if(op[i] == "."){
+                        result += ".";
+                        continue;
+                    }
+
+                    tempRes = parseInt(op[i]) + parseInt(carry[carry.length-1]);
+                    tempCarry =  Math.floor(tempRes / 2);
+                    tempRes = tempRes % 2;
+
+                    result += "" + tempRes;
+                    carry += "" + tempCarry;
+                }
+
+                if(tempCarry == 1){
+                    result +="1";
+                    carry +="0";
+                }
+    
+                result = Array.from(result).reverse().join("");
+
+                return result; 
+            }
+            return op;
+        }else{
+            return op;
+        }
+
+        
+    }
+
     function alignDecimal(op1, op2, nBits, round, exp1, exp2){
         if(exp1 > exp2){
             let n = exp1 - exp2;
@@ -81,18 +150,14 @@ $(document).ready(function(){
             GRS(op1, nBits);
             GRS(op2, nBits);
         }else{
-            round(op1, nBits);
-            round(op2, nBits);
+            op1 = rounding(op1, nBits);
+            op2 = rounding(op2, nBits);
+            $(".round1").append("<p class=\"results\"> Operator1: "+ op1 +"</p>");
+            $(".round1").append("<p class=\"results\"> Operator2: "+ op2 +"</p>");
         }
     }
 
-    function GRS(op, nBits){
 
-    }
-    
-    function round(op, nBits){
-
-    }
 
 
     function step1(op1, op2, nBits, round, exp1, exp2){
@@ -128,7 +193,7 @@ $(document).ready(function(){
             }
             
             op = op.replace(".", "");
-            result = op.substring(0, one) + "." + op.substring(one);
+            result = op.substring(0, one+1) + "." + op.substring(one+1);
         }
 
         result = result.substring(op.indexOf("1"));
