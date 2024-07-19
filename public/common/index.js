@@ -10,12 +10,15 @@ $(document).ready(function(){
         //clear inputs
         $(".align").empty();
         $(".round1").empty();
+        $(".op-table").empty();
 
         //Check Inputs
         validateInput(op1, op2, nBits, round, exp1, exp2);
 
         //step1 normalize the inputs move all decimal
         step1(op1, op2, nBits, round, exp1, exp2);
+
+        
     });
 
 
@@ -155,6 +158,9 @@ $(document).ready(function(){
             $(".round1").append("<p class=\"results\"> Operator1: "+ op1 +"</p>");
             $(".round1").append("<p class=\"results\"> Operator2: "+ op2 +"</p>");
         }
+
+        //step 2 operation
+        step2(op1, op2, nBits, round, exp1, exp2);
     }
 
 
@@ -173,7 +179,7 @@ $(document).ready(function(){
         op1 = res1[1];
         op2 = res2[1];
 
-        alignDecimal(op1, op2, nBits, round, exp1, exp2)
+        alignDecimal(op1, op2, nBits, round, exp1, exp2);
     }
 
     function normalize(op, nBits){
@@ -216,5 +222,87 @@ $(document).ready(function(){
         let result = op.replace(".", "");
         result = result.substring(0, 1) + "." + result.substring(1);
         return result;
+    }
+
+    function alignFloatingPoints(op1, op2) {
+        let [intPart1, decPart1] = op1.split('.');
+        let [intPart2, decPart2] = op2.split('.');
+    
+        if (!decPart1) decPart1 = '';
+        if (!decPart2) decPart2 = '';
+    
+        // Align integer parts by padding zeros
+        if (intPart1.length > intPart2.length) {
+            let n = intPart1.length - intPart2.length;
+            for (let i = 0; i < n; i++) {
+                intPart2 = '0' + intPart2;
+            }
+        } else {
+            let n = intPart2.length - intPart1.length;
+            for (let i = 0; i < n; i++) {
+                intPart1 = '0' + intPart1;
+            }
+        }
+    
+        // Align decimal parts by padding zeros
+        if (decPart1.length > decPart2.length) {
+            let n = decPart1.length - decPart2.length;
+            for (let i = 0; i < n; i++) {
+                decPart2 += '0';
+            }
+        } else {
+            let n = decPart2.length - decPart1.length;
+            for (let i = 0; i < n; i++) {
+                decPart1 += '0';
+            }
+        }
+    
+        // Combine the integer and decimal parts
+        let alignedOp1 = intPart1 + '.' + decPart1;
+        let alignedOp2 = intPart2 + '.' + decPart2;
+    
+        return { alignedOp1, alignedOp2 };
+    }
+
+
+    function step2(op1, op2, nBits){
+
+        //for formating
+        let aligned = alignFloatingPoints(op1, op2);
+        op1 = aligned.alignedOp1;
+        op2 = aligned.alignedOp2;
+
+        console.log(op1);
+        console.log(op2);
+
+        let carry = "", tempCarry = 0;
+        let result = "", tempRes;
+
+        for(let i = op1.length-1; i >= 0; i--){
+            if(op1[i] == "."){
+                result+=".";
+                continue;
+            }
+            tempRes = parseInt(op1[i]) + parseInt(op2[i]) + parseInt(tempCarry);
+            tempCarry = Math.floor(tempRes / 2);
+            tempRes = tempRes % 2;
+
+            carry += tempCarry;
+            result += tempRes;
+
+        }
+
+        if(tempCarry == 1){
+            result +="1";
+            carry +="0";
+        }
+
+
+
+        $(".op-table").append("<p class=\"results\"> &nbsp &nbsp &nbsp &nbsp"+ Array.from(carry).reverse().join("") +"</p>");
+        $(".op-table").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp"+ op1 +"</p>");
+        $(".op-table").append("<p class=\"results\"> &nbsp &nbsp &nbsp &nbsp"+ op2 +"</p>");
+        $(".op-table").append("<p class=\"results\">&nbsp&nbsp + </p>");
+        $(".opp-res").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp"+ Array.from(result).reverse().join("") +"</p>");
     }
 });

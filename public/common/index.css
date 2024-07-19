@@ -62,3 +62,17 @@ body{
 .results{
     color: white;
 }
+
+
+.op-table{
+    border-bottom: 1px solid white;
+}
+
+.step2{
+    display: flex;
+}
+
+.desc{
+    width: 10%;
+    border-right: 1px solid white;
+}
