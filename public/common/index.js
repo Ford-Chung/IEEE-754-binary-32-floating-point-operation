@@ -7,8 +7,8 @@ $(document).ready(function(){
         let exp1 = parseInt($('#exp1').val());
         let exp2 = parseInt($('#exp2').val());
 
-        let sign1 = "";
-        let sign2 = "";
+        let sign1 = " ";
+        let sign2 = " ";
 
         if(op1[0] == "-"){
             sign1 = "-";
@@ -30,7 +30,7 @@ $(document).ready(function(){
         //Check Inputs
         if(!validateInput(op1, op2, nBits, round, exp1, exp2)){
             //step1 normalize the inputs move all decimal
-            let result = step1(op1, op2, nBits, round, exp1, exp2);
+            let result = step1(op1, op2, nBits, round, exp1, exp2, sign1, sign2);
 
 
             //update the value based on the preprocessing steps
@@ -43,7 +43,7 @@ $(document).ready(function(){
             let added = step2(op1, op2, sign1, sign2);
 
             //step 3 operation: Post operation normalization
-            step3(added, nBits, exp1, round);
+            step3(added[0], added[1], nBits, exp1, round);
         }
 
 
@@ -85,7 +85,7 @@ $(document).ready(function(){
     }
 
 
-    function step3(added, nBits, exp1, round){
+    function step3(sign, added, nBits, exp1, round){
         //normalize check for overflow or just adjust the decimal point
         let placeholder;
         let exp = exp1;
@@ -95,7 +95,7 @@ $(document).ready(function(){
         exp += parseInt(placeholder[0]);
         result = placeholder[1];
 
-        $(".overflow").append("<p class=\"results\"> Normalized: "+ result +" x2 ^ "+ exp +"</p>");
+        $(".overflow").append("<p class=\"results\"> Normalized: "+ sign + result +" x2 ^ "+ exp +"</p>");
 
   
         result = rounding(result, nBits);
@@ -105,7 +105,7 @@ $(document).ready(function(){
         exp += parseInt(placeholder[0]);
         result = placeholder[1];
 
-        $(".post-rounding").append("<p class=\"results\"> Rounding: "+ result +" x2 ^ "+ exp +"</p>");
+        $(".post-rounding").append("<p class=\"results\"> Rounding: "+ sign +result +" x2 ^ "+ exp +"</p>");
     }
 
 
@@ -162,9 +162,17 @@ $(document).ready(function(){
 
 
     function GRS(op, nBits){
+
+        if(op.length-1== nBits)
+            return op+"000";
+
         let g, r, s = 0;
         let excess = op.substring(parseInt(nBits)+1)
         op = op.substring(0, parseInt(nBits)+1);
+
+        for(let i = excess.length; i < 3; i++){
+            excess += "0";
+        }
 
         g = excess[0];
         r = excess[1];
@@ -262,7 +270,7 @@ $(document).ready(function(){
         
     }
 
-    function alignDecimal(op1, op2, nBits, round, exp1, exp2){
+    function alignDecimal(op1, op2, nBits, round, exp1, exp2, s1, s2){
         if(exp1 > exp2){
             let n = exp1 - exp2;
             op2 = shiftRight(nBits, op2, n);
@@ -276,9 +284,9 @@ $(document).ready(function(){
         }
 
         //insert Result 
-        $(".align").append("<p class=\"results\"> Operator1: "+ op1 +"</p>");
+        $(".align").append("<p class=\"results\"> Operator1: "+ s1 + op1 +"</p>");
         $(".align").append("<p class=\"results\"> Exponent1: "+ exp1 +"</p>");
-        $(".align").append("<p class=\"results\"> Operator2: "+ op2 +"</p>");
+        $(".align").append("<p class=\"results\"> Operator2: "+ s2 + op2 +"</p>");
         $(".align").append("<p class=\"results\"> Exponent2: "+ exp2 +"</p>");        
 
         //Make into appropriate length
@@ -290,8 +298,8 @@ $(document).ready(function(){
             op2 = rounding(op2, nBits);
         }
 
-        $(".round1").append("<p class=\"results\"> Operator1: "+ op1 +"</p>");
-        $(".round1").append("<p class=\"results\"> Operator2: "+ op2 +"</p>");
+        $(".round1").append("<p class=\"results\"> Operator1: "+ s1 +op1 +"</p>");
+        $(".round1").append("<p class=\"results\"> Operator2: "+ s2 +op2 +"</p>");
 
         return [op1, op2, exp1, exp2];
         
@@ -300,7 +308,7 @@ $(document).ready(function(){
 
 
 
-    function step1(op1, op2, nBits, round, exp1, exp2){
+    function step1(op1, op2, nBits, round, exp1, exp2, s1, s2){
         let op1Dec = op1.indexOf(".");
         let op2Dec = op2.indexOf(".");
         let res1 = normalize(op1, nBits);
@@ -313,7 +321,7 @@ $(document).ready(function(){
         op1 = res1[1];
         op2 = res2[1];
 
-        return alignDecimal(op1, op2, nBits, round, exp1, exp2);
+        return alignDecimal(op1, op2, nBits, round, exp1, exp2, s1, s2);
     }
 
     function normalize(op, nBits){
@@ -333,6 +341,8 @@ $(document).ready(function(){
             }
             
             op = op.replace(".", "");
+            one = op.indexOf("1");
+
             result = op.substring(0, one+1) + "." + op.substring(one+1);
         }
 
@@ -432,14 +442,17 @@ $(document).ready(function(){
         op1 = aligned.alignedOp1;
         op2 = aligned.alignedOp2;
         let placeholder;
+        let resSign = " ";
 
 
         if((sign1 == "-" || sign2 == "-") && !(sign1 == "-" && sign2 == "-")){
             let greater = compareBinary(op1, op2);
             if(greater == 1 || greater == 3){
                 placeholder = subtraction(op1, op2);
+                resSign = sign1;
             }else if(greater == 2){
                 placeholder = subtraction(op2, op1);
+                resSign = sign2;                
             }
         }else{
             placeholder = addition(op1, op2);
@@ -449,10 +462,10 @@ $(document).ready(function(){
         let result = placeholder[0];
         let carry = placeholder[1];
         $(".op-table").append("<p class=\"results\"> &nbsp &nbsp &nbsp &nbsp"+ carry +"</p>");
-        $(".op-table").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp"+ op1 +"</p>");
-        $(".op-table").append("<p class=\"results\"> &nbsp &nbsp &nbsp &nbsp"+ op2 +"</p>");
+        $(".op-table").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp"+ sign1 + op1 +"</p>");
+        $(".op-table").append("<p class=\"results\"> &nbsp &nbsp &nbsp &nbsp"+ sign2 + op2 +"</p>");
         $(".op-table").append("<p class=\"results\">&nbsp&nbsp + </p>");
-        $(".op-res").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp"+ result +"</p>");
-        return result;
+        $(".op-res").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp"+ resSign +result +"</p>");
+        return [resSign, result];
     }
 });
