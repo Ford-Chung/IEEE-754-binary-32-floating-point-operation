@@ -1,1 +1,34 @@
-# IEEE-754-binary-32-floating-point-operation
+# IEEE-754 binary-32 floating point operation
+
+## Specification
+- Input: (1) Two operands in binary and base-2 (2) Choice of rounding (G/R/S or
+rounding) (3) Number of digits supported
+- Process: addition of two operands
+- Output:
+  - a. Step-by-step operation
+    - 1. Initial normalization
+    - 2. operation
+    - 3. post-operation normalization
+    - 4. final answer;
+  - b. Option to output in a text file
+
+## Usage
+
+### Running Locally
+
+Clone the repository
+```
+$ git clone https://github.com/Ford-Chung/IEEE-754-binary-32-floating-point-operation app
+```
+
+Run the application via Node.js
+```
+$ cd app && node app.js
+```
+
+Visit the Web application locally by clicking [here](http://localhost:9090/)
+```
+http://localhost:9090/
+```
+### Via Render Web Service
+Visit <https://ieee-754-binary-32-floating-point.onrender.com>
