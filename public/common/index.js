@@ -465,11 +465,6 @@ $(document).ready(function () {
 
         let result = placeholder[0];
         let carry = placeholder[1];
-        console.log(placeholder);            //debug  
-        console.log(result);            //debug  
-        console.log(carry);             //debug
-        console.log(sign1 + op1);       //debug
-        console.log(sign1 + op2);       //debug
         $(".op-table").append("<p class=\"results\">&nbsp &nbsp &nbsp &nbsp" + carry + "</p>");
         $(".op-table").append("<p class=\"results\">&nbsp &nbsp &nbsp &nbsp" + sign1 + op1 + "</p>");
         $(".op-table").append("<p class=\"results\">&nbsp &nbsp &nbsp &nbsp" + sign2 + op2 + "</p>");
