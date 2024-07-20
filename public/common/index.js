@@ -1,5 +1,5 @@
-$(document).ready(function(){
-    $("#submit").click(function(){
+$(document).ready(function () {
+    $("#submit").click(function () {
         let op1 = $('#op1').val();
         let op2 = $('#op2').val();
         let nBits = $('#nBits').val();
@@ -10,16 +10,16 @@ $(document).ready(function(){
         let sign1 = " ";
         let sign2 = " ";
 
-        if(op1[0] == "-"){
+        if (op1[0] == "-") {
             sign1 = "-";
             op1 = op1.substring(1);
         }
-        if(op2[0] == "-"){
+        if (op2[0] == "-") {
             sign2 = "-";
             op2 = op2.substring(1);
         }
-        
-        //clear inputs
+
+        // Clear Inputs
         $(".align").empty();
         $(".round1").empty();
         $(".op-table").empty();
@@ -27,22 +27,22 @@ $(document).ready(function(){
         $(".overflow").empty();
         $(".post-rounding").empty();
 
-        //Check Inputs
-        if(!validateInput(op1, op2, nBits, round, exp1, exp2)){
-            //step1 normalize the inputs move all decimal
+        // Check Inputs
+        if (!validateInput(op1, op2, nBits, round, exp1, exp2)) {
+            // step1 normalize the inputs move all decimal
             let result = step1(op1, op2, nBits, round, exp1, exp2, sign1, sign2);
 
 
-            //update the value based on the preprocessing steps
+            // update the value based on the preprocessing steps
             op1 = result[0];
             op2 = result[1];
             exp1 = result[2];
             exp2 = result[3];
 
-            //step 2 operation: addition operation
+            // step 2 operation: addition operation
             let added = step2(op1, op2, sign1, sign2);
 
-            //step 3 operation: Post operation normalization
+            // step 3 operation: Post operation normalization
             step3(added[0], added[1], nBits, exp1, round);
         }
 
@@ -53,10 +53,10 @@ $(document).ready(function(){
         // Helper function to convert binary string with radix point to decimal number
         function binaryToDecimal(bin) {
             let [intPart, fracPart] = bin.split('.');
-    
+
             // Convert integer part
             let intDecimal = parseInt(intPart, 2);
-    
+
             // Convert fractional part
             let fracDecimal = 0;
             if (fracPart) {
@@ -66,14 +66,14 @@ $(document).ready(function(){
                     }
                 }
             }
-    
+
             return intDecimal + fracDecimal;
         }
-    
+
         // Convert both binary strings to decimal numbers
         const dec1 = binaryToDecimal(bin1);
         const dec2 = binaryToDecimal(bin2);
-    
+
         // Compare the decimal numbers
         if (dec1 > dec2) {
             return 1;
@@ -85,27 +85,27 @@ $(document).ready(function(){
     }
 
 
-    function step3(sign, added, nBits, exp1, round){
-        //normalize check for overflow or just adjust the decimal point
+    function step3(sign, added, nBits, exp1, round) {
+        // normalize check for overflow or just adjust the decimal point
         let placeholder;
         let exp = exp1;
         let result;
-        //grs == 1, else rounding
+        // grs == 1, else rounding
         placeholder = normalize(added, nBits);
         exp += parseInt(placeholder[0]);
         result = placeholder[1];
 
-        $(".overflow").append("<p class=\"results\"> Normalized: "+ sign + result +" x2 ^ "+ exp +"</p>");
+        $(".overflow").append("<p class=\"results\"> Normalized: " + sign + result + " * 2^" + exp + "</p>");
 
-  
+
         result = rounding(result, nBits);
-        
+
 
         placeholder = normalize(result, nBits);
         exp += parseInt(placeholder[0]);
         result = placeholder[1];
 
-        $(".post-rounding").append("<p class=\"results\"> Rounding: "+ sign +result +" x2 ^ "+ exp +"</p>");
+        $(".post-rounding").append("<p class=\"results\"> Rounding: " + sign + result + " * 2^" + exp + "</p>");
     }
 
 
@@ -114,44 +114,44 @@ $(document).ready(function(){
         let message2 = "";
         let bValid = true;
         let error = false;
-        
+
         $(".error-container").empty();
         let op1Temp = op1.replace(".", "");
         let op2Temp = op2.replace(".", "");
 
-        if(op1Temp[0] == "-"){
+        if (op1Temp[0] == "-") {
             op1Temp = op1Temp.substring(1);
         }
-        
-        if(op2Temp[0] == "-"){
+
+        if (op2Temp[0] == "-") {
             op2Temp = op1Temp.substring(1);
         }
 
         var i;
-   
-        
-        for(i = 0; i < op1Temp.length; i++){
-            if(op1Temp[i] != "0" && op1Temp[i] != "1"){
-                bValid = false;   
-            }
-        }
-        for(i = 0; i < op2Temp.length; i++){
-            if(op2Temp[i] != "0" && op2Temp[i] != "1"){
+
+
+        for (i = 0; i < op1Temp.length; i++) {
+            if (op1Temp[i] != "0" && op1Temp[i] != "1") {
                 bValid = false;
             }
         }
-        
-    
-        if(op1.length == 0 || op2.length==0 || nBits.length == 0){
+        for (i = 0; i < op2Temp.length; i++) {
+            if (op2Temp[i] != "0" && op2Temp[i] != "1") {
+                bValid = false;
+            }
+        }
+
+
+        if (op1.length == 0 || op2.length == 0 || nBits.length == 0) {
             $(".error-container").append("<p class=\"error\">Please Provide all inputs.</p>");
             error = true;
         }
-        if(nBits <= 0){
+        if (nBits <= 0) {
             $(".error-container").append("<p class=\"error\">Number of Digits must be greater than 0</p>");
             error = true;
         }
-        
-        if(!bValid){
+
+        if (!bValid) {
             $(".error-container").append("<p class=\"error\">Input is not in Binary.</p>");
             error = true;
         }
@@ -161,16 +161,16 @@ $(document).ready(function(){
 
 
 
-    function GRS(op, nBits){
+    function GRS(op, nBits) {
 
-        if(op.length-1== nBits)
-            return op+"000";
+        if (op.length - 1 == nBits)
+            return op + "000";
 
         let g, r, s = 0;
-        let excess = op.substring(parseInt(nBits)+1)
-        op = op.substring(0, parseInt(nBits)+1);
+        let excess = op.substring(parseInt(nBits) + 1)
+        op = op.substring(0, parseInt(nBits) + 1);
 
-        for(let i = excess.length; i < 3; i++){
+        for (let i = excess.length; i < 3; i++) {
             excess += "0";
         }
 
@@ -179,24 +179,24 @@ $(document).ready(function(){
 
         let sTemp = excess.substring(2);
 
-        for(let i = 0; i < sTemp.length; i++){
-            if(sTemp[i] == "1"){
+        for (let i = 0; i < sTemp.length; i++) {
+            if (sTemp[i] == "1") {
                 s = "1";
             }
         }
-        
+
         return op + g + r + s;
 
     }
 
-    function addition(op1, op2){
+    function addition(op1, op2) {
         let carry = "", tempCarry = 0;
         let result = "", tempRes;
 
-        for(let i = op1.length-1; i >= 0; i--){
-            if(op1[i] == "."){
-                result+=".";
-                carry+=" ";
+        for (let i = op1.length - 1; i >= 0; i--) {
+            if (op1[i] == ".") {
+                result += ".";
+                carry += " ";
                 continue;
             }
             tempRes = parseInt(op1[i]) + parseInt(op2[i]) + parseInt(tempCarry);
@@ -208,30 +208,30 @@ $(document).ready(function(){
 
         }
 
-        if(tempCarry == 1){
-            result +="1";
+        if (tempCarry == 1) {
+            result += "1";
         }
 
-        return [ Array.from(result).reverse().join(""),  Array.from(carry).reverse().join("")];
+        return [Array.from(result).reverse().join(""), Array.from(carry).reverse().join("")];
     }
-    
-    function rounding(op, nBits){
+
+    function rounding(op, nBits) {
         let carry = "";
         let result = "";
-        //nearest even
-        if(op.length - 1 != nBits){
-            nDigits = op.substring(0, parseInt(nBits)+1);
-            excess = op.substring(parseInt(nBits)+1)
+        // nearest even
+        if (op.length - 1 != nBits) {
+            nDigits = op.substring(0, parseInt(nBits) + 1);
+            excess = op.substring(parseInt(nBits) + 1)
             let half = excess;
             half = half.replaceAll("1", "0").replace("0", "1");
 
             let check = compareBinary(half, excess);
 
-            if(check == 1){
-                return op.substring(0, parseInt(nBits)+1);
-            }else if(check == 2 || check == 3){
-                if(check == 3 && op[nBits] == 0){
-                    return op.substring(0, parseInt(nBits)+1);
+            if (check == 1) {
+                return op.substring(0, parseInt(nBits) + 1);
+            } else if (check == 2 || check == 3) {
+                if (check == 3 && op[nBits] == 0) {
+                    return op.substring(0, parseInt(nBits) + 1);
                 }
 
                 tempRes = parseInt(op[nBits]) + 1;
@@ -240,82 +240,85 @@ $(document).ready(function(){
                 result += "" + tempRes;
                 carry += "" + tempCarry;
 
-                for(let i = nBits-1; i >= 0; i--){
-                    if(op[i] == "."){
+                for (let i = nBits - 1; i >= 0; i--) {
+                    if (op[i] == ".") {
                         result += ".";
                         continue;
                     }
 
-                    tempRes = parseInt(op[i]) + parseInt(carry[carry.length-1]);
-                    tempCarry =  Math.floor(tempRes / 2);
+                    tempRes = parseInt(op[i]) + parseInt(carry[carry.length - 1]);
+                    tempCarry = Math.floor(tempRes / 2);
                     tempRes = tempRes % 2;
 
                     result += "" + tempRes;
                     carry += "" + tempCarry;
                 }
 
-                if(tempCarry == 1){
-                    result +="1";
-                    carry +="0";
+                if (tempCarry == 1) {
+                    result += "1";
+                    carry += "0";
                 }
-    
+
                 result = Array.from(result).reverse().join("");
 
-                return result; 
+                return result;
             }
-        }else{
+        } else {
             return op;
         }
 
-        
+
     }
 
-    function alignDecimal(op1, op2, nBits, round, exp1, exp2, s1, s2){
-        if(exp1 > exp2){
+    function alignDecimal(op1, op2, nBits, round, exp1, exp2, s1, s2) {
+        if (exp1 > exp2) {
             let n = exp1 - exp2;
             op2 = shiftRight(nBits, op2, n);
             exp2 += n;
         }
-        
-        if(op1 < op2){
+
+        if (op1 < op2) {
             let n = exp2 - exp1;
             op1 = shiftRight(nBits, op1, n);
             exp1 += n;
         }
 
-        //insert Result 
-        $(".align").append("<p class=\"results\"> Operator1: "+ s1 + op1 +"</p>");
-        $(".align").append("<p class=\"results\"> Exponent1: "+ exp1 +"</p>");
-        $(".align").append("<p class=\"results\"> Operator2: "+ s2 + op2 +"</p>");
-        $(".align").append("<p class=\"results\"> Exponent2: "+ exp2 +"</p>");        
+        // Insert Result 
+        $(".align").append("<p class=\"results\"> Operator1: " + s1 + op1 + "</p>");
+        $(".align").append("<p class=\"results\"> Exponent1: " + exp1 + "</p>");
+        $(".align").append("<p class=\"results\"> Operator2: " + s2 + op2 + "</p>");
+        $(".align").append("<p class=\"results\"> Exponent2: " + exp2 + "</p>");
 
-        //Make into appropriate length
-        if(round == "1"){
+        // Make into appropriate length
+        if (round == "1") {
             op1 = GRS(op1, nBits);
             op2 = GRS(op2, nBits);
-        }else{
+        } else {
             op1 = rounding(op1, nBits);
             op2 = rounding(op2, nBits);
         }
 
-        $(".round1").append("<p class=\"results\"> Operator1: "+ s1 +op1 +"</p>");
-        $(".round1").append("<p class=\"results\"> Operator2: "+ s2 +op2 +"</p>");
+        // if ((sign1 == "-" || sign2 == "-") && !(sign1 == "-" && sign2 == "-")) {
+        // if (s1 == '-' && s2 != '-') {
+        //     s2 = " " + s2;
+        // } else if (s1 != '-' && s2 == '-') {
+        //     s1 = " " + s1;
+        // }
+        $(".round1").append("<p class=\"results\"> Operator1: " + s1 + op1 + "</p>");
+        $(".round1").append("<p class=\"results\"> Operator2: " + s2 + op2 + "</p>");
 
         return [op1, op2, exp1, exp2];
-        
+
     }
 
-
-
-
-    function step1(op1, op2, nBits, round, exp1, exp2, s1, s2){
+    function step1(op1, op2, nBits, round, exp1, exp2, s1, s2) {
         let op1Dec = op1.indexOf(".");
         let op2Dec = op2.indexOf(".");
         let res1 = normalize(op1, nBits);
         let res2 = normalize(op2, nBits);
 
-        //index 0 contains exp while index 1 contains the number itself
-        //calculate new exponent
+        // index 0 contains exp while index 1 contains the number itself
+        // calculate new exponent
         exp1 += parseInt(res1[0]);
         exp2 += parseInt(res2[0]);
         op1 = res1[1];
@@ -324,43 +327,43 @@ $(document).ready(function(){
         return alignDecimal(op1, op2, nBits, round, exp1, exp2, s1, s2);
     }
 
-    function normalize(op, nBits){
+    function normalize(op, nBits) {
         let one = op.indexOf("1");
         let n, result;
-        if(op.indexOf(".") == 1 && op.indexOf("1") == 0){
+        if (op.indexOf(".") == 1 && op.indexOf("1") == 0) {
             n = 0;
             result = op;
-        }else if(op.indexOf(".") == -1){
-            result = op.substring(0, one) + "." + op.substring(one+1);
+        } else if (op.indexOf(".") == -1) {
+            result = op.substring(0, one) + "." + op.substring(one + 1);
             n = nBits - 1 - one;
-        }else{
-            if(op.indexOf(".") < one){
+        } else {
+            if (op.indexOf(".") < one) {
                 n = op.indexOf(".") - one;
-            } else{
+            } else {
                 n = op.indexOf(".") - one - 1;
             }
-            
+
             op = op.replace(".", "");
             one = op.indexOf("1");
 
-            result = op.substring(0, one+1) + "." + op.substring(one+1);
+            result = op.substring(0, one + 1) + "." + op.substring(one + 1);
         }
 
         result = result.substring(op.indexOf("1"));
-        
-        //extend to required digits
-        if(result.length-1 < nBits){
-            let tempLen = result.length-1;
-            for(let i = 0; i < nBits - tempLen; i++){
-                result += "0"; 
+
+        // extend to required digits
+        if (result.length - 1 < nBits) {
+            let tempLen = result.length - 1;
+            for (let i = 0; i < nBits - tempLen; i++) {
+                result += "0";
             }
         }
 
         return [n, result];
     }
 
-    function shiftRight(nBits, op, n){
-        for(let i = 0; i < n; i++){
+    function shiftRight(nBits, op, n) {
+        for (let i = 0; i < n; i++) {
             op = "0" + op;
         }
         let result = op.replace(".", "");
@@ -371,10 +374,10 @@ $(document).ready(function(){
     function alignFloatingPoints(op1, op2) {
         let [intPart1, decPart1] = op1.split('.');
         let [intPart2, decPart2] = op2.split('.');
-    
+
         if (!decPart1) decPart1 = '';
         if (!decPart2) decPart2 = '';
-    
+
         // Align integer parts by padding zeros
         if (intPart1.length > intPart2.length) {
             let n = intPart1.length - intPart2.length;
@@ -387,7 +390,7 @@ $(document).ready(function(){
                 intPart1 = '0' + intPart1;
             }
         }
-    
+
         // Align decimal parts by padding zeros
         if (decPart1.length > decPart2.length) {
             let n = decPart1.length - decPart2.length;
@@ -400,29 +403,29 @@ $(document).ready(function(){
                 decPart1 += '0';
             }
         }
-    
+
         // Combine the integer and decimal parts
         let alignedOp1 = intPart1 + '.' + decPart1;
         let alignedOp2 = intPart2 + '.' + decPart2;
-    
+
         return { alignedOp1, alignedOp2 };
     }
 
-    function subtraction(op1, op2){
+    function subtraction(op1, op2) {
         let carry = "", tempCarry = 0;
         let result = "", tempRes;
 
-        for(let i = op1.length-1; i >= 0; i--){
-            if(op1[i] == "."){
-                result+=".";
-                carry+=" ";
+        for (let i = op1.length - 1; i >= 0; i--) {
+            if (op1[i] == ".") {
+                result += ".";
+                carry += " ";
                 continue;
             }
             tempRes = parseInt(op1[i]) - parseInt(op2[i]) - tempCarry;
-            if(tempRes < 0){
+            if (tempRes < 0) {
                 tempCarry = 1;
                 tempRes += 2;
-            }else{
+            } else {
                 tempCarry = 0;
             }
 
@@ -432,12 +435,12 @@ $(document).ready(function(){
         }
 
 
-        return [ Array.from(result).reverse().join(""),  Array.from(carry).reverse().join("")];
+        return [Array.from(result).reverse().join(""), Array.from(carry).reverse().join("")];
     }
 
-    function step2(op1, op2, sign1, sign2){
+    function step2(op1, op2, sign1, sign2) {
 
-        //for formating
+        // for formating
         let aligned = alignFloatingPoints(op1, op2);
         op1 = aligned.alignedOp1;
         op2 = aligned.alignedOp2;
@@ -445,27 +448,33 @@ $(document).ready(function(){
         let resSign = " ";
 
 
-        if((sign1 == "-" || sign2 == "-") && !(sign1 == "-" && sign2 == "-")){
+        if ((sign1 == "-" || sign2 == "-") && !(sign1 == "-" && sign2 == "-")) {
             let greater = compareBinary(op1, op2);
-            if(greater == 1 || greater == 3){
+            if (greater == 1 || greater == 3) {
                 placeholder = subtraction(op1, op2);
                 resSign = sign1;
-            }else if(greater == 2){
+            } else if (greater == 2) {
                 placeholder = subtraction(op2, op1);
-                resSign = sign2;                
+                resSign = sign2;
             }
-        }else{
+            placeholder[1] = " " + placeholder[1]
+        } else {
             placeholder = addition(op1, op2);
         }
 
-        
+
         let result = placeholder[0];
         let carry = placeholder[1];
-        $(".op-table").append("<p class=\"results\"> &nbsp &nbsp &nbsp &nbsp"+ carry +"</p>");
-        $(".op-table").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp"+ sign1 + op1 +"</p>");
-        $(".op-table").append("<p class=\"results\"> &nbsp &nbsp &nbsp &nbsp"+ sign2 + op2 +"</p>");
+        console.log(placeholder);            //debug  
+        console.log(result);            //debug  
+        console.log(carry);             //debug
+        console.log(sign1 + op1);       //debug
+        console.log(sign1 + op2);       //debug
+        $(".op-table").append("<p class=\"results\">&nbsp &nbsp &nbsp &nbsp" + carry + "</p>");
+        $(".op-table").append("<p class=\"results\">&nbsp &nbsp &nbsp &nbsp" + sign1 + op1 + "</p>");
+        $(".op-table").append("<p class=\"results\">&nbsp &nbsp &nbsp &nbsp" + sign2 + op2 + "</p>");
         $(".op-table").append("<p class=\"results\">&nbsp&nbsp + </p>");
-        $(".op-res").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp"+ resSign +result +"</p>");
+        $(".op-res").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp" + resSign + result + "</p>");
         return [resSign, result];
     }
 });
