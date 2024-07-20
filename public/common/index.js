@@ -78,7 +78,7 @@ $(document).ready(function(){
         if (dec1 > dec2) {
             return 1;
         } else if (dec1 < dec2) {
-            return 3;
+            return 2;
         } else {
             return 3;
         }
@@ -97,17 +97,15 @@ $(document).ready(function(){
 
         $(".overflow").append("<p class=\"results\"> Normalized: "+ result +" x2 ^ "+ exp +"</p>");
 
-        if(round == "1"){
-
-        }else{ 
-            result = rounding(result, nBits);
-        }
+  
+        result = rounding(result, nBits);
+        
 
         placeholder = normalize(result, nBits);
         exp += parseInt(placeholder[0]);
         result = placeholder[1];
 
-        $(".post-rounding").append("<p class=\"results\"> Rounding(TTE): "+ result +" x2 ^ "+ exp +"</p>");
+        $(".post-rounding").append("<p class=\"results\"> Rounding: "+ result +" x2 ^ "+ exp +"</p>");
     }
 
 
@@ -164,6 +162,22 @@ $(document).ready(function(){
 
 
     function GRS(op, nBits){
+        let g, r, s = 0;
+        let excess = op.substring(parseInt(nBits)+1)
+        op = op.substring(0, parseInt(nBits)+1);
+
+        g = excess[0];
+        r = excess[1];
+
+        let sTemp = excess.substring(2);
+
+        for(let i = 0; i < sTemp.length; i++){
+            if(sTemp[i] == "1"){
+                s = "1";
+            }
+        }
+        
+        return op + g + r + s;
 
     }
 
@@ -200,8 +214,18 @@ $(document).ready(function(){
         if(op.length - 1 != nBits){
             nDigits = op.substring(0, parseInt(nBits)+1);
             excess = op.substring(parseInt(nBits)+1)
+            let half = excess;
+            half = half.replaceAll("1", "0").replace("0", "1");
 
-            if(excess[0] == "1"){
+            let check = compareBinary(half, excess);
+
+            if(check == 1){
+                return op.substring(0, parseInt(nBits)+1);
+            }else if(check == 2 || check == 3){
+                if(check == 3 && op[nBits] == 0){
+                    return op.substring(0, parseInt(nBits)+1);
+                }
+
                 tempRes = parseInt(op[nBits]) + 1;
                 tempCarry = Math.floor(tempRes / 2);
                 tempRes = tempRes % 2;
@@ -231,7 +255,6 @@ $(document).ready(function(){
 
                 return result; 
             }
-            return op.substring(0, parseInt(nBits)+1);
         }else{
             return op;
         }
@@ -260,14 +283,15 @@ $(document).ready(function(){
 
         //Make into appropriate length
         if(round == "1"){
-            GRS(op1, nBits);
-            GRS(op2, nBits);
+            op1 = GRS(op1, nBits);
+            op2 = GRS(op2, nBits);
         }else{
             op1 = rounding(op1, nBits);
             op2 = rounding(op2, nBits);
-            $(".round1").append("<p class=\"results\"> Operator1: "+ op1 +"</p>");
-            $(".round1").append("<p class=\"results\"> Operator2: "+ op2 +"</p>");
         }
+
+        $(".round1").append("<p class=\"results\"> Operator1: "+ op1 +"</p>");
+        $(".round1").append("<p class=\"results\"> Operator2: "+ op2 +"</p>");
 
         return [op1, op2, exp1, exp2];
         
@@ -411,11 +435,11 @@ $(document).ready(function(){
 
 
         if((sign1 == "-" || sign2 == "-") && !(sign1 == "-" && sign2 == "-")){
-            let greater = compareBinary(op1, op2) == 1
+            let greater = compareBinary(op1, op2);
             if(greater == 1 || greater == 3){
                 placeholder = subtraction(op1, op2);
             }else if(greater == 2){
-
+                placeholder = subtraction(op2, op1);
             }
         }else{
             placeholder = addition(op1, op2);
@@ -428,7 +452,7 @@ $(document).ready(function(){
         $(".op-table").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp"+ op1 +"</p>");
         $(".op-table").append("<p class=\"results\"> &nbsp &nbsp &nbsp &nbsp"+ op2 +"</p>");
         $(".op-table").append("<p class=\"results\">&nbsp&nbsp + </p>");
-        $(".opp-res").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp"+ result +"</p>");
+        $(".op-res").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp"+ result +"</p>");
         return result;
     }
 });
