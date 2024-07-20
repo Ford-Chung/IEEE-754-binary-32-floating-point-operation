@@ -1,25 +1,65 @@
 $(document).ready(function(){
     $("#submit").click(function(){
-        const op1 = $('#op1').val();
-        const op2 = $('#op2').val();
-        const nBits = $('#nBits').val();
-        const round = $('#round').val();
-        const exp1 = parseInt($('#exp1').val());
-        const exp2 = parseInt($('#exp2').val());
+        let op1 = $('#op1').val();
+        let op2 = $('#op2').val();
+        let nBits = $('#nBits').val();
+        let round = $('#round').val();
+        let exp1 = parseInt($('#exp1').val());
+        let exp2 = parseInt($('#exp2').val());
 
         //clear inputs
         $(".align").empty();
         $(".round1").empty();
         $(".op-table").empty();
+        $(".op-res").empty();
+        $(".overflow").empty();
+        $(".post-rounding").empty();
 
         //Check Inputs
         validateInput(op1, op2, nBits, round, exp1, exp2);
 
         //step1 normalize the inputs move all decimal
-        step1(op1, op2, nBits, round, exp1, exp2);
+        let result = step1(op1, op2, nBits, round, exp1, exp2);
 
-        
+
+        //update the value based on the preprocessing steps
+        op1 = result[0];
+        op2 = result[1];
+        exp1 = result[2];
+        exp2 = result[3];
+
+        //step 2 operation: addition operation
+        let added = step2(op1, op2, nBits, round, exp1, exp2);
+
+        //step 3 operation: Post operation normalization
+        step3(added, nBits, exp1, round);
     });
+
+
+    function step3(added, nBits, exp1, round){
+        //normalize check for overflow or just adjust the decimal point
+        let placeholder;
+        let exp = exp1;
+        let result;
+        //grs == 1, else rounding
+        placeholder = normalize(added, nBits);
+        exp += parseInt(placeholder[0]);
+        result = placeholder[1];
+
+        $(".overflow").append("<p class=\"results\"> Normalized: "+ result +" x10 ^ "+ exp +"</p>");
+
+        if(round == "1"){
+
+        }else{ 
+            result = rounding(result, nBits);
+        }
+
+        placeholder = normalize(result, nBits);
+        exp += parseInt(placeholder[0]);
+        result = placeholder[1];
+
+        $(".post-rounding").append("<p class=\"results\"> Rounding(TTE): "+ result +" x10 ^ "+ exp +"</p>");
+    }
 
 
     function validateInput(op1, op2, nBits, round) {
@@ -36,18 +76,20 @@ $(document).ready(function(){
         }
 
         var i;
+   
         if(nValid){
             for(i = 0; i < nBits; i++){
                 if(op1[i] != "0" && op1[i] != "1" && op1[i] != "."){
                     bValid = false;   
                 }
-    
+
                 if(op2[i] != "0" && op2[i] != "1" && op2[i] != "."){
                     bValid = false;
                 }
             }
-    
         }
+    
+        
 
         if(op1.length == 0 || op2.length==0 || nBits.length == 0){
             $(".error-container").append("<p class=\"error\">Please Provide all inputs.</p>");
@@ -55,9 +97,6 @@ $(document).ready(function(){
         if(nBits <= 0){
             $(".error-container").append("<p class=\"error\">Number of Digits must be greater than 0</p>");
         }
-        // if(!nValid){
-        //     $(".error-container").append("<p class=\"error\">Length of Input is not equal to number of digits</p>");
-        // }
         
         if(!bValid){
             $(".error-container").append("<p class=\"error\">Input is not in Binary.</p>");
@@ -70,17 +109,30 @@ $(document).ready(function(){
 
     }
 
-    function addition(op1, op2, nBits){
-        let carry = [];
-        let result = [];
+    function addition(op1, op2){
+        let carry = "", tempCarry = 0;
+        let result = "", tempRes;
 
+        for(let i = op1.length-1; i >= 0; i--){
+            if(op1[i] == "."){
+                result+=".";
+                carry+=" ";
+                continue;
+            }
+            tempRes = parseInt(op1[i]) + parseInt(op2[i]) + parseInt(tempCarry);
+            tempCarry = Math.floor(tempRes / 2);
+            tempRes = tempRes % 2;
 
-        for(let i = nBits; i >= 0 ; i--){
-            let sumTemp = parseInt(op1[i]) + parseInt(op2[i]);
-            let carryTemp = sumTemp / 2;
-            sumTemp %= 2;
+            carry += tempCarry;
+            result += tempRes;
 
         }
+
+        if(tempCarry == 1){
+            result +="1";
+        }
+
+        return [result, carry];
     }
     
     function rounding(op, nBits){
@@ -121,7 +173,7 @@ $(document).ready(function(){
 
                 return result; 
             }
-            return op;
+            return op.substring(0, parseInt(nBits)+1);
         }else{
             return op;
         }
@@ -159,8 +211,8 @@ $(document).ready(function(){
             $(".round1").append("<p class=\"results\"> Operator2: "+ op2 +"</p>");
         }
 
-        //step 2 operation
-        step2(op1, op2, nBits, round, exp1, exp2);
+        return [op1, op2, exp1, exp2];
+        
     }
 
 
@@ -179,7 +231,7 @@ $(document).ready(function(){
         op1 = res1[1];
         op2 = res2[1];
 
-        alignDecimal(op1, op2, nBits, round, exp1, exp2);
+        return alignDecimal(op1, op2, nBits, round, exp1, exp2);
     }
 
     function normalize(op, nBits){
@@ -272,37 +324,14 @@ $(document).ready(function(){
         op1 = aligned.alignedOp1;
         op2 = aligned.alignedOp2;
 
-        console.log(op1);
-        console.log(op2);
-
-        let carry = "", tempCarry = 0;
-        let result = "", tempRes;
-
-        for(let i = op1.length-1; i >= 0; i--){
-            if(op1[i] == "."){
-                result+=".";
-                continue;
-            }
-            tempRes = parseInt(op1[i]) + parseInt(op2[i]) + parseInt(tempCarry);
-            tempCarry = Math.floor(tempRes / 2);
-            tempRes = tempRes % 2;
-
-            carry += tempCarry;
-            result += tempRes;
-
-        }
-
-        if(tempCarry == 1){
-            result +="1";
-            carry +="0";
-        }
-
-
-
+        let added = addition(op1, op2);
+        let result = added[0];
+        let carry = added[1];
         $(".op-table").append("<p class=\"results\"> &nbsp &nbsp &nbsp &nbsp"+ Array.from(carry).reverse().join("") +"</p>");
         $(".op-table").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp"+ op1 +"</p>");
         $(".op-table").append("<p class=\"results\"> &nbsp &nbsp &nbsp &nbsp"+ op2 +"</p>");
         $(".op-table").append("<p class=\"results\">&nbsp&nbsp + </p>");
         $(".opp-res").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp"+ Array.from(result).reverse().join("") +"</p>");
+        return Array.from(result).reverse().join("");
     }
 });
