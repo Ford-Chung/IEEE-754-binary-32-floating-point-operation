@@ -1,7 +1,7 @@
 $(document).ready(function(){
     var download = "";
     $("#submit").click(function(){
-        download = "Inputs:\n";
+        download = "Inputs:\n\n";
         let op1 = $('#op1').val();
         let op2 = $('#op2').val();
         let nBits = $('#nBits').val();
@@ -11,12 +11,13 @@ $(document).ready(function(){
 
         download += "op1 = " + op1 + "x2^" + exp1 + "\n"; 
         download += "op2 = " + op2 + "x2^" + exp2 + "\n"; 
-        download += "Number of Bits" + nBits + "\n";
+        download += "Number of Bits: " + nBits + "\n";
         if(round == "1"){
             download += "Rounding: GRS\n";
         }else{
             download += "Rounding: Ties to Even\n";
         }
+        download+= "\n--------------------------------------------\n"
         
         let sign1 = " ";
         let sign2 = " ";
@@ -131,7 +132,7 @@ $(document).ready(function(){
 
         $(".post-rounding").append("<p class=\"results\"> Rounding: "+ sign +result +" x2 ^ "+ exp +"</p>");
         download += "Rounding: " + sign + result + " x2^" + exp + "\n";
-
+        $(".final-answer").append("<p class=\"results\"> FINAL ANSWER: "+ sign +result +" x2 ^ "+ exp +"</p>");
         download += "\n\nFinal: "+ sign + result + " x2^" + exp + "\n";
     }
 
