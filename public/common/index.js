@@ -1,5 +1,7 @@
-$(document).ready(function () {
-    $("#submit").click(function () {
+$(document).ready(function(){
+    var download = "";
+    $("#submit").click(function(){
+        download = "Inputs:\n";
         let op1 = $('#op1').val();
         let op2 = $('#op2').val();
         let nBits = $('#nBits').val();
@@ -7,6 +9,15 @@ $(document).ready(function () {
         let exp1 = parseInt($('#exp1').val());
         let exp2 = parseInt($('#exp2').val());
 
+        download += "op1 = " + op1 + "x2^" + exp1 + "\n"; 
+        download += "op2 = " + op2 + "x2^" + exp2 + "\n"; 
+        download += "Number of Bits" + nBits + "\n";
+        if(round == "1"){
+            download += "Rounding: GRS\n";
+        }else{
+            download += "Rounding: Ties to Even\n";
+        }
+        
         let sign1 = " ";
         let sign2 = " ";
 
@@ -44,9 +55,20 @@ $(document).ready(function () {
 
             // step 3 operation: Post operation normalization
             step3(added[0], added[1], nBits, exp1, round);
+            
         }
 
 
+    });
+
+    $("#download").click(function(){
+        const link = document.createElement("a");
+        const content = download;
+        const file = new Blob([content], { type: 'text/plain' });
+        link.href = URL.createObjectURL(file);
+        link.download = "sample.txt";
+        link.click();
+        URL.revokeObjectURL(link.href);
     });
 
     function compareBinary(bin1, bin2) {
@@ -85,8 +107,9 @@ $(document).ready(function () {
     }
 
 
-    function step3(sign, added, nBits, exp1, round) {
-        // normalize check for overflow or just adjust the decimal point
+    function step3(sign, added, nBits, exp1, round){
+        download += "\n\nStep 3: post-operation normalization\n";
+        //normalize check for overflow or just adjust the decimal point
         let placeholder;
         let exp = exp1;
         let result;
@@ -95,7 +118,8 @@ $(document).ready(function () {
         exp += parseInt(placeholder[0]);
         result = placeholder[1];
 
-        $(".overflow").append("<p class=\"results\"> Normalized: " + sign + result + " * 2^" + exp + "</p>");
+        $(".overflow").append("<p class=\"results\"> Normalized: "+ sign + result +" x2 ^ "+ exp +"</p>");
+        download += "Normalized: " + sign + result + " x2^" + exp + "\n"; 
 
 
         result = rounding(result, nBits);
@@ -105,7 +129,10 @@ $(document).ready(function () {
         exp += parseInt(placeholder[0]);
         result = placeholder[1];
 
-        $(".post-rounding").append("<p class=\"results\"> Rounding: " + sign + result + " * 2^" + exp + "</p>");
+        $(".post-rounding").append("<p class=\"results\"> Rounding: "+ sign +result +" x2 ^ "+ exp +"</p>");
+        download += "Rounding: " + sign + result + " x2^" + exp + "\n";
+
+        download += "\n\nFinal: "+ sign + result + " x2^" + exp + "\n";
     }
 
 
@@ -283,11 +310,15 @@ $(document).ready(function () {
             exp1 += n;
         }
 
-        // Insert Result 
-        $(".align").append("<p class=\"results\"> Operator1: " + s1 + op1 + "</p>");
-        $(".align").append("<p class=\"results\"> Exponent1: " + exp1 + "</p>");
-        $(".align").append("<p class=\"results\"> Operator2: " + s2 + op2 + "</p>");
-        $(".align").append("<p class=\"results\"> Exponent2: " + exp2 + "</p>");
+        //insert Result 
+        $(".align").append("<p class=\"results\"> Operator1: "+ s1 + op1 +"</p>");
+        $(".align").append("<p class=\"results\"> Exponent1: "+ exp1 +"</p>");
+        $(".align").append("<p class=\"results\"> Operator2: "+ s2 + op2 +"</p>");
+        $(".align").append("<p class=\"results\"> Exponent2: "+ exp2 +"</p>");     
+        
+        download += "\n\nAlign Decimal Points\n\n";
+        download += "Op1: " + s1 + op1 + " x2^"+exp1 + "\n";
+        download += "Op2: " + s2 + op2 + " x2^"+exp2 + "\n";
 
         // Make into appropriate length
         if (round == "1") {
@@ -298,20 +329,21 @@ $(document).ready(function () {
             op2 = rounding(op2, nBits);
         }
 
-        // if ((sign1 == "-" || sign2 == "-") && !(sign1 == "-" && sign2 == "-")) {
-        // if (s1 == '-' && s2 != '-') {
-        //     s2 = " " + s2;
-        // } else if (s1 != '-' && s2 == '-') {
-        //     s1 = " " + s1;
-        // }
-        $(".round1").append("<p class=\"results\"> Operator1: " + s1 + op1 + "</p>");
-        $(".round1").append("<p class=\"results\"> Operator2: " + s2 + op2 + "</p>");
+        $(".round1").append("<p class=\"results\"> Operator1: "+ s1 +op1 +"</p>");
+        $(".round1").append("<p class=\"results\"> Operator2: "+ s2 +op2 +"</p>");
+        download += "\n\nRound to Required Length:\n\n";
+        download += "Op1: " + s1 + op1 + " x2^"+exp1 + "\n";
+        download += "Op2: " + s2 + op2 + " x2^"+exp2 + "\n";
 
         return [op1, op2, exp1, exp2];
 
     }
 
-    function step1(op1, op2, nBits, round, exp1, exp2, s1, s2) {
+
+
+
+    function step1(op1, op2, nBits, round, exp1, exp2, s1, s2){
+        download+= "Step 1: Normalization\n";
         let op1Dec = op1.indexOf(".");
         let op2Dec = op2.indexOf(".");
         let res1 = normalize(op1, nBits);
@@ -438,7 +470,8 @@ $(document).ready(function () {
         return [Array.from(result).reverse().join(""), Array.from(carry).reverse().join("")];
     }
 
-    function step2(op1, op2, sign1, sign2) {
+    function step2(op1, op2, sign1, sign2){
+        download += "\n\nStep 2: Addition Operation\n";
 
         // for formating
         let aligned = alignFloatingPoints(op1, op2);
@@ -469,7 +502,15 @@ $(document).ready(function () {
         $(".op-table").append("<p class=\"results\">&nbsp &nbsp &nbsp &nbsp" + sign1 + op1 + "</p>");
         $(".op-table").append("<p class=\"results\">&nbsp &nbsp &nbsp &nbsp" + sign2 + op2 + "</p>");
         $(".op-table").append("<p class=\"results\">&nbsp&nbsp + </p>");
-        $(".op-res").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp" + resSign + result + "</p>");
+        $(".op-res").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp"+ resSign +result +"</p>");
+        download += "\n\nAddition Operation\n\n";
+        download += "Carry   |     " + carry + "\n";
+        download += "Op1     |    " + sign1 + op1 + "\n";
+        download += "Op2     |    " + sign2 + op2 + "\n";
+        download += "           +\n";
+        download += "\n--------------------------------------------\n"
+        download += "             " + resSign + result + "\n";
+
         return [resSign, result];
     }
 });
