@@ -1,5 +1,5 @@
-$(document).ready(function(){
-    $("#submit").click(function(){
+$(document).ready(function () {
+    $("#submit").click(function () {
         let op1 = $('#op1').val();
         let op2 = $('#op2').val();
         let nBits = $('#nBits').val();
@@ -85,8 +85,8 @@ $(document).ready(function(){
     }
 
 
-    function step3(sign, added, nBits, exp1, round){
-        //normalize check for overflow or just adjust the decimal point
+    function step3(sign, added, nBits, exp1, round) {
+        // normalize check for overflow or just adjust the decimal point
         let placeholder;
         let exp = exp1;
         let result;
@@ -95,7 +95,8 @@ $(document).ready(function(){
         exp += parseInt(placeholder[0]);
         result = placeholder[1];
 
-        $(".overflow").append("<p class=\"results\"> Normalized: "+ sign + result +" x2 ^ "+ exp +"</p>");
+        $(".overflow").append("<p class=\"results\"> Normalized: " + sign + result + " * 2^" + exp + "</p>");
+
 
         result = rounding(result, nBits);
 
@@ -104,7 +105,7 @@ $(document).ready(function(){
         exp += parseInt(placeholder[0]);
         result = placeholder[1];
 
-        $(".post-rounding").append("<p class=\"results\"> Rounding: "+ sign +result +" x2 ^ "+ exp +"</p>");
+        $(".post-rounding").append("<p class=\"results\"> Rounding: " + sign + result + " * 2^" + exp + "</p>");
     }
 
 
@@ -282,11 +283,11 @@ $(document).ready(function(){
             exp1 += n;
         }
 
-        //insert Result 
-        $(".align").append("<p class=\"results\"> Operator1: "+ s1 + op1 +"</p>");
-        $(".align").append("<p class=\"results\"> Exponent1: "+ exp1 +"</p>");
-        $(".align").append("<p class=\"results\"> Operator2: "+ s2 + op2 +"</p>");
-        $(".align").append("<p class=\"results\"> Exponent2: "+ exp2 +"</p>");        
+        // Insert Result 
+        $(".align").append("<p class=\"results\"> Operator1: " + s1 + op1 + "</p>");
+        $(".align").append("<p class=\"results\"> Exponent1: " + exp1 + "</p>");
+        $(".align").append("<p class=\"results\"> Operator2: " + s2 + op2 + "</p>");
+        $(".align").append("<p class=\"results\"> Exponent2: " + exp2 + "</p>");
 
         // Make into appropriate length
         if (round == "1") {
@@ -297,17 +298,20 @@ $(document).ready(function(){
             op2 = rounding(op2, nBits);
         }
 
-        $(".round1").append("<p class=\"results\"> Operator1: "+ s1 +op1 +"</p>");
-        $(".round1").append("<p class=\"results\"> Operator2: "+ s2 +op2 +"</p>");
+        // if ((sign1 == "-" || sign2 == "-") && !(sign1 == "-" && sign2 == "-")) {
+        // if (s1 == '-' && s2 != '-') {
+        //     s2 = " " + s2;
+        // } else if (s1 != '-' && s2 == '-') {
+        //     s1 = " " + s1;
+        // }
+        $(".round1").append("<p class=\"results\"> Operator1: " + s1 + op1 + "</p>");
+        $(".round1").append("<p class=\"results\"> Operator2: " + s2 + op2 + "</p>");
 
         return [op1, op2, exp1, exp2];
 
     }
 
-
-
-
-    function step1(op1, op2, nBits, round, exp1, exp2, s1, s2){
+    function step1(op1, op2, nBits, round, exp1, exp2, s1, s2) {
         let op1Dec = op1.indexOf(".");
         let op2Dec = op2.indexOf(".");
         let res1 = normalize(op1, nBits);
@@ -434,7 +438,7 @@ $(document).ready(function(){
         return [Array.from(result).reverse().join(""), Array.from(carry).reverse().join("")];
     }
 
-    function step2(op1, op2, sign1, sign2){
+    function step2(op1, op2, sign1, sign2) {
 
         // for formating
         let aligned = alignFloatingPoints(op1, op2);
@@ -465,7 +469,7 @@ $(document).ready(function(){
         $(".op-table").append("<p class=\"results\">&nbsp &nbsp &nbsp &nbsp" + sign1 + op1 + "</p>");
         $(".op-table").append("<p class=\"results\">&nbsp &nbsp &nbsp &nbsp" + sign2 + op2 + "</p>");
         $(".op-table").append("<p class=\"results\">&nbsp&nbsp + </p>");
-        $(".op-res").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp"+ resSign +result +"</p>");
+        $(".op-res").append("<p class=\"results\">  &nbsp &nbsp &nbsp &nbsp" + resSign + result + "</p>");
         return [resSign, result];
     }
 });
