@@ -1,78 +1,122 @@
-body{
-    background-color:#27323A;
-
+:root {
+    --dark-bg: #121212;
+    --divider: rgba(255, 255, 255, 0.12);
+    --disabled: rgba(255, 255, 255, 0.3);
+    --c1-accent: #29A19C;
 }
 
-.output-area{
-    background-color:#1921268b;
-    border: 1px solid white;
-    width: 80%;
-    padding: 2%;
-    border-radius: 10px;
+* {
+    font-family: "JetBrains Mono", monospace;
+    font-optical-sizing: auto;
+    font-style: normal;
 }
 
-.main{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color:#1921268b;
-    border: 1px solid white;
-    width: 20%;
+body {
+    background-color: var(--dark-bg);
+}
+
+.output-area {
+    width: 100%;
     padding: 5%;
-    padding-bottom: 5%;
-    border-radius: 10px;
 }
 
-.container{
+.main {
     display: flex;
+    flex-direction: row;
+    width: 80%;
+    padding: 5%;
+    background-color: var(--dark-bg);
 }
 
-.input-area{
+.title {
+    color: white;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.input-area {
     display: flex;
     flex-direction: column;
     align-items: center;
     height: 90%;
+    width: 100%;
+    padding: 5%;
 }
 
-.title{
-    color:#29A19C;
-}
-
-.labels{
+.labels {
     color: white;
 }
 
-.input-containers{
+.input-containers {
     text-align: center;
     margin: 10px;
 }
 
-.button-container{
+.button-container {
     border-top: 1px solid white;
     padding-top: 15px;
     text-align: center;
     width: 100%;
 }
 
-
 .error {
     color: red;
 }
 
-.results{
+.results {
     color: white;
 }
 
-
-.op-table{
+.op-table {
     border-bottom: 1px solid white;
 }
 
-.step2{
+.step2 {
     display: flex;
 }
 
-.desc{
+.desc {
     width: 10%;
     border-right: 1px solid white;
+}
+
+.num-input {
+    font-size: 20px;
+}
+
+.math-field, input, select {
+    --caret: #6314E6;
+    --highlight: #E6DAFA;
+    --contains-highlight: transparent;
+    border: 3px solid var(--disabled);
+    color: white;
+    cursor: default;
+    display: block;
+    outline: none;
+    opacity: 1;
+    text-align: left;
+    background-color: var(--dark-bg);
+    pointer-events: all;
+    line-height: 28px;
+    border-radius: 8px;
+    transition: .2s ease-in-out;
+    margin: 5px;
+    padding: 6px 14px;
+}
+
+input:focus, select:focus{
+    border: 3px solid white;
+}
+
+.c1-bg {
+    background-color: var(--c1-accent);
+}
+
+.c1-text {
+    color: var(--c1-accent);
 }
