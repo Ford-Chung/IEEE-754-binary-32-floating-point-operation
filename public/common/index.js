@@ -38,6 +38,7 @@ $(document).ready(function(){
         $(".op-res").empty();
         $(".overflow").empty();
         $(".post-rounding").empty();
+        $(".final-answer").empty();
 
         // Check Inputs
         if (!validateInput(op1, op2, nBits, round, exp1, exp2)) {
@@ -258,11 +259,21 @@ $(document).ready(function(){
             if (check == 1) {
                 return op.substring(0, parseInt(nBits) + 1);
             } else if (check == 2 || check == 3) {
-                if (check == 3 && op[nBits] == 0) {
-                    return op.substring(0, parseInt(nBits) + 1);
+                if(op[nBits] == "."){
+                    //if the last character is the decimal point
+                    tempRes = parseInt(op[nBits-1]) + 1;
+                    nBits--;
+                    if (check == 3 && op[nBits-1] == 0) {
+                        return op.substring(0, parseInt(nBits) + 1);
+                    }
+                }else{
+                    tempRes = parseInt(op[nBits]) + 1;
+                    if (check == 3 && op[nBits] == 0) {
+                        return op.substring(0, parseInt(nBits) + 1);
+                    }
                 }
-
-                tempRes = parseInt(op[nBits]) + 1;
+                
+                
                 tempCarry = Math.floor(tempRes / 2);
                 tempRes = tempRes % 2;
                 result += "" + tempRes;
@@ -367,8 +378,8 @@ $(document).ready(function(){
             n = 0;
             result = op;
         } else if (op.indexOf(".") == -1) {
-            result = op.substring(0, one) + "." + op.substring(one + 1);
-            n = nBits - 1 - one;
+            result = op.substring(0, one+1) + "." + op.substring(one + 1);
+            n = op.length - one - 1;
         } else {
             if (op.indexOf(".") < one) {
                 n = op.indexOf(".") - one;
