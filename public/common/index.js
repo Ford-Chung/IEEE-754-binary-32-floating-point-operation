@@ -120,7 +120,10 @@ $(document).ready(function(){
         exp += parseInt(placeholder[0]);
         result = placeholder[1];
 
-        $(".overflow").append("<p class=\"results\"> Normalized: "+ sign + result +" x2 ^ "+ exp +"</p>");
+        var latexExpression = `^ {${exp}}`;
+        $(".overflow").append("<p class=\"results\"> Normalized: "+ sign + result +" x 2"+ `\\( ${latexExpression} \\)` + "</p>");
+        MathJax.typeset();
+        
         download += "Normalized: " + sign + result + " x2^" + exp + "\n"; 
 
 
@@ -131,9 +134,11 @@ $(document).ready(function(){
         exp += parseInt(placeholder[0]);
         result = placeholder[1];
 
-        $(".post-rounding").append("<p class=\"results\"> Rounding: "+ sign +result +" x2 ^ "+ exp +"</p>");
+        $(".post-rounding").append("<p class=\"results\"> Rounding: "+ sign +result +" x 2"+ `\\( ${latexExpression} \\)` +"</p>");
+        MathJax.typeset();
         download += "Rounding: " + sign + result + " x2^" + exp + "\n";
-        $(".final-answer").append("<p class=\"results\"> FINAL ANSWER: "+ sign +result +" x2 ^ "+ exp +"</p>");
+        $(".final-answer").append("<p class=\"results\"> FINAL ANSWER: "+ sign +result +" x 2"+ `\\( ${latexExpression} \\)`+"</p>");
+        MathJax.typeset();
         download += "\n\nFinal: "+ sign + result + " x2^" + exp + "\n";
     }
 
