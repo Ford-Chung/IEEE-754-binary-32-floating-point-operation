@@ -1,7 +1,7 @@
 # IEEE-754 binary-32 floating point operation
 
 ## Specification
-- Input: (1) Two operands in binary and base-2 (2) Choice of rounding (G/R/S or
+- Input: (1) Two operands in binary and base-2 (2) Choice of Rounding (G/R/S or
 rounding) (3) Number of digits supported
 - Process: addition of two operands
 - Output:
