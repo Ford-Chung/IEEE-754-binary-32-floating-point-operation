@@ -133,6 +133,7 @@ $(document).ready(function(){
         placeholder = normalize(result, nBits);
         exp += parseInt(placeholder[0]);
         result = placeholder[1];
+        latexExpression = `^ {${exp}}`;
 
         $(".post-rounding").append("<p class=\"results\"> Rounding: "+ sign +result +" x 2"+ `\\( ${latexExpression} \\)` +"</p>");
         MathJax.typeset();
