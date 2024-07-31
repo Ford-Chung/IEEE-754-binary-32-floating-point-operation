@@ -1,6 +1,6 @@
 # IEEE-754 binary-32 floating point operation
 
-## Specification
+## How to Use
 - Input: (1) Two operands in binary and base-2 (2) Choice of Rounding (G/R/S or
 rounding) (3) Number of digits supported
 - Process: addition of two operands
@@ -15,15 +15,28 @@ rounding) (3) Number of digits supported
 ## Usage
 
 ### Running Locally
+1. Through Github Clone
+  Clone the repository
+  ```
+  $ git clone https://github.com/Ford-Chung/IEEE-754-binary-32-floating-point-operation app
+  ```
+  
+  Run the application via Node.js
+  ```
+  $ cd app && node app.js
+  ```
+2. Download As ZIP
+  Download the ZIP file from the github browser
 
-Clone the repository
+### Download dependecies
 ```
-$ git clone https://github.com/Ford-Chung/IEEE-754-binary-32-floating-point-operation app
+npm init
+npm i express express-handlebars body-parser
 ```
 
-Run the application via Node.js
+### Run the Code
 ```
-$ cd app && node app.js
+node app.js
 ```
 
 Visit the Web application locally by clicking [here](http://localhost:9090/)
