@@ -511,6 +511,7 @@ $(document).ready(function(){
             placeholder[1] = " " + placeholder[1]
         } else {
             placeholder = addition(op1, op2);
+            resSign = sign1;
         }
 
 
