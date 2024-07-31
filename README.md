@@ -44,4 +44,6 @@ Visit the Web application locally by clicking [here](http://localhost:9090/)
 http://localhost:9090/
 ```
 ### Via Render Web Service
+*Note that the website might take around a couple seconds to load*
+
 Visit <https://ieee-754-binary-32-floating-point.onrender.com>
